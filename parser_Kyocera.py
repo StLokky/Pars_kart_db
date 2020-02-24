@@ -1,23 +1,8 @@
-import requests
+from global_var import *
+from comon_func import *
+
 from bs4 import BeautifulSoup
-
-URL = 'http://rashodnika.net/10_1_1.html'  # Kyocera
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 YaBrowser/19.12.3.332 (beta) Yowser/2.5 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3'}
-HOST = 'http://rashodnika.net/'
-BD_KYOCERA = []
-count = 1
-
-def get_html(url, params=None):
-    try:
-        r = requests.get(url, headers=HEADERS, params=params)
-    except Exception as e:
-        print('Невозможно подключиться к серверу. Проверьте ссылку или доступ в интернет')
-        print(f'Ошибка: {e.__class__}')
-        raise SystemExit
-    return r
-
+import csv
 
 def get_kyocera_links(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -32,31 +17,30 @@ def get_kyocera_links(html):
     return f_url
 
 
-def get_kyocera_page_content(html, name, brand, link):
+def get_kyocera_page_content(html, name, link):
     soup = BeautifulSoup(html, 'html.parser')
-    items = soup.h5
-    items = items.find_next_siblings('ul')
+    items = soup.h5.find_next_siblings('ul')
     kart_for_prn = []
     list_of_prn = []
-    global count
-    print(f'{count}. Обрабатываем {name} по ссылке {link}...', end=' ')
+    global COUNT
+    print(f'{COUNT}. Обрабатываем картридж {name} по ссылке {link}...', end=' ')
     for item in items:
         for i in item:
             list_of_prn.append({
-                'name': brand + ' ' + i.find('a').get_text(),
+                'name': 'Kyocera ' + i.find('a').get_text(),
                 'link': HOST + i.find('a').get('href')
             })
     kart_for_prn.append({
-        'name': name,
+        'name': 'Kyocera ' + name,
         'link': link,
-        'prns': list_of_prn
+        'devices': list_of_prn
     })
-    print(f'Получено {len(list_of_prn)} ')
-    count += 1
+    print(f'Получено {len(list_of_prn)} аппарата(ов)')
+    COUNT += 1
     return kart_for_prn
 
 def parse_kyocera():
-    html = get_html(URL)
+    html = get_request(URL)
     if html.status_code != 200:
         print('Ошибка открытия страницы - ', URL)
         print(html)
@@ -66,19 +50,44 @@ def parse_kyocera():
     bd_links = get_kyocera_links(html.text)
     print(f'Готово. Собрано {len(bd_links)} ссылок.')
 
-    for item in bd_links:
-        html = get_html(item['link'])
+    for item in bd_links[:10]:
+        html = get_request(item['link'])
         if html.status_code != 200:
             print('Ошибка открытия страницы - ', item['link'])
             print(html)
             continue
-        BD_KYOCERA.append(get_kyocera_page_content(html.text, item['name'], 'Kyocera', item['link']))
+        BD_KYOCERA.append(get_kyocera_page_content(html.text, item['name'], item['link']))
 
+def str_of_devices(items):
+    s = ''
+    tstr = []
+    for i in items:
+        s = ''
+        tstr = []
+        for d in i['devices']:
+            tstr.append(d['name'])
+    s = ', '.join(tstr)
+    print('devices - ', s)
+    return s
+
+
+def write_kyocera_csv():
+    global BD_KYOCERA
+    with open('kyocera.csv', 'w', newline='') as file:
+        writer = csv.writer(file, delimiter=';')
+        writer.writerow(['Картридж', 'Ссылка картриджа', 'Устройства'])
+        for item in BD_KYOCERA:
+            devices = str_of_devices(item)
+            print('item - ', item)
+            for i in item:
+            writer.writerow([i['name'], i['link'], devices])
 
 
 parse_kyocera()
+write_kyocera_csv()
 
-print(BD_KYOCERA[0])
-print(BD_KYOCERA[4])
-print(BD_KYOCERA[-1])
-print(BD_KYOCERA[-2])
+# print('0', BD_KYOCERA[0])
+# print('4', BD_KYOCERA[4])
+# print('...')
+# print('-2', BD_KYOCERA[-2])
+# print('-1', BD_KYOCERA[-1])
