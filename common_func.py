@@ -10,3 +10,12 @@ def get_request(url, params=None):
         raise SystemExit
     return r
 
+def get_list_of_devices(items, brand):
+    list_of_devices = []
+    for item in items:
+        for i in item:
+            list_of_devices.append({
+                'name': brand + ' ' + i.find('a').get_text(),
+                'link': HOST + i.find('a').get('href')
+            })
+    return list_of_devices

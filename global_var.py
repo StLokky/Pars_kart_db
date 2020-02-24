@@ -9,3 +9,6 @@ HOST = 'http://rashodnika.net/'
 BD_KYOCERA = []
 
 COUNT = 1
+
+START = 0
+STOP = 10
