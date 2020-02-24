@@ -1,4 +1,3 @@
-import requests
 from global_var import *
 
 def get_request(url, params=None):
@@ -19,3 +18,4 @@ def get_list_of_devices(items, brand):
                 'link': HOST + i.find('a').get('href')
             })
     return list_of_devices
+

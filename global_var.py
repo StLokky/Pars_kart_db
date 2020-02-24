@@ -1,4 +1,8 @@
-URL = 'http://rashodnika.net/10_1_1.html'  # Kyocera
+from bs4 import BeautifulSoup
+import csv
+import requests
+
+URL_KYO = 'http://rashodnika.net/10_1_1.html'  # Kyocera
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 YaBrowser/19.12.3.332 (beta) Yowser/2.5 Safari/537.36',

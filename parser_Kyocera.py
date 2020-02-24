@@ -1,8 +1,5 @@
 from common_func import *
 
-from bs4 import BeautifulSoup
-import csv
-
 def get_kyocera_links(html):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.find_all(colspan="2")
@@ -34,9 +31,9 @@ def get_kyocera_page_content(html, name, link):
     return kart_for_devices
 
 def parse_kyocera():
-    html = get_request(URL)
+    html = get_request(URL_KYO)
     if html.status_code != 200:
-        print('Ошибка открытия страницы - ', URL)
+        print('Ошибка открытия страницы - ', URL_KYO)
         print(html)
         raise SystemExit
 
