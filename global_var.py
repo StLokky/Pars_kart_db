@@ -10,9 +10,15 @@ HEADERS = {
 
 HOST = 'http://rashodnika.net/'
 
+KYO_CART_PARAM = []
+
+    # 'Ресурс, стр. (5%)', 'Part No.', 'Относительно совместимый тонер:', 'Масса тонера, г.',
+    # 'Чип:', 'Заправка картриджа', 'Родственник:', 'Kyocera Parts Lists'
+
+
 BD_KYOCERA = []
 
 COUNT = 1
 
-START = 129
-STOP = 132
+START = 500
+STOP = 508
