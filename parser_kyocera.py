@@ -41,13 +41,19 @@ def get_kyocera_page_content(html, bd_link):
     print(f'Получено {len(list_of_devices)} аппарата(ов)')
 
     items = soup.h4.find_previous_sibling('br')
-    type_cart = items.previous.replace('\r\n','')
+    try:                                                # на 5 страницах раздела нестандартная разметка
+        type_cart = items.previous.replace('\r\n','')   # разобраться позже или обработать 5 пустых записей
+    except Exception as e:                              # "тип картриджа" - ручками
+        type_cart = ''
+        print(f'Ошибка получения типа картриджа в странице {COUNT}, картридж - {bd_link["name"]}')
+        print(f'Ошибка: {e.__class__}')
 
     items = soup.find_all(border = '1')[0].find_all('td')
     cart_param = get_kyo_cart_param(items)
 
 
     cartridge.append({
+        'count': COUNT,
         'brand': 'Kyocera',
         'name': bd_link["name"],
         'type_cart': type_cart,
@@ -72,7 +78,7 @@ def parse_kyocera():
 
     global COUNT
     COUNT = START
-    for bd_link in bd_links[START:STOP]:
+    for bd_link in bd_links:
         COUNT += 1
         html = get_request(bd_link['link'])
         if html.status_code != 200:
@@ -95,6 +101,7 @@ def write_kyocera_csv():
             devices = str_of_devices(item[0]['devices'])
             for i in item:
                 writer.writerow([
+                i['count'],
                 i['brand'],
                 i['name'],
                 i['type_cart'],

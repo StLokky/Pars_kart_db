@@ -18,7 +18,7 @@ KYO_CART_PARAM = []
 
 BD_KYOCERA = []
 
-COUNT = 1
+COUNT = 0
 
-START = 500
-STOP = 508
+START = 0
+STOP = -1
