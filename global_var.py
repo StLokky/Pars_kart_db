@@ -14,5 +14,5 @@ BD_KYOCERA = []
 
 COUNT = 1
 
-START = 0
-STOP = 10
+START = 129
+STOP = 132
