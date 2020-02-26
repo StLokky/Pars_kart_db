@@ -92,9 +92,9 @@ def parse_kyocera():
     return
 
 
-def write_kyocera_csv():
+def write_kyocera_csv(filename):
     global BD_KYOCERA
-    with open('kyocera.csv', 'w', newline='') as file:
+    with open(filename, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=';')
         #writer.writerow(['Картридж', 'Тип картриджа', 'Ссылка картриджа', 'Устройства' ])
         for item in BD_KYOCERA:
@@ -114,8 +114,8 @@ def write_kyocera_csv():
 
 
 parse_kyocera()
-write_kyocera_csv()
+write_kyocera_csv('kyocera.csv')
 
-write_kyocera_pickle(BD_KYOCERA, 'pickle_kyo.bd')
-write_kyocera_json(BD_KYOCERA, 'json_kyo_bd.txt')
+write_data_to_file_pickle(BD_KYOCERA, 'pickle_kyo.bd')
+write_data_to_file_json(BD_KYOCERA, 'json_kyo_bd.txt')
 
