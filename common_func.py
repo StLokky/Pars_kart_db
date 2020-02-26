@@ -27,23 +27,35 @@ def str_of_devices(items):
 
 
 def write_data_to_file_pickle(data, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(data, file)
-    return
+    try:
+        with open(filename, 'wb') as file:
+            pickle.dump(data, file)
+    except Exception as e:
+        return e
+    return 0
 
 
 def write_data_to_file_json(data, filename):
-    with open(filename, 'w') as file:
-        json.dump(data, file)
-    return
+    try:
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+    except Exception as e:
+        return e
+    return 0
 
 def read_data_from_file_pickle(filename):
-    with open(filename, 'rb') as file:
-        data = pickle.load(file)
+    try:
+        with open(filename, 'rb') as file:
+            data = pickle.load(file)
+    except Exception as e:
+        return None
     return data
 
 
 def read_data_from_file_json(filename):
-    with open(filename, 'r') as file:
-        data = json.load(file)
+    try:
+        with open(filename, 'r') as file:
+            data = json.load(file)
+    except Exception as e:
+        return None
     return data
