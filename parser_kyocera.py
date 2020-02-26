@@ -111,7 +111,11 @@ def write_kyocera_csv():
                 ])
 
 
+
+
 parse_kyocera()
 write_kyocera_csv()
 
+write_kyocera_pickle(BD_KYOCERA, 'pickle_kyo.bd')
+write_kyocera_json(BD_KYOCERA, 'json_kyo_bd.txt')
 

@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import csv
 import requests
+import pickle
+import json
 
 URL_KYO = 'http://rashodnika.net/10_1_1.html'  # Kyocera
 
@@ -21,4 +23,4 @@ BD_KYOCERA = []
 COUNT = 0
 
 START = 0
-STOP = -1
+STOP = 100

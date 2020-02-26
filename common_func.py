@@ -24,3 +24,26 @@ def str_of_devices(items):
     for item in items:
         lst.append(item['name'])
     return ', '.join(lst)
+
+
+def write_kyocera_pickle(data, path):
+    with open(path, 'wb') as file:
+        pickle.dump(data, file)
+    return
+
+
+def write_kyocera_json(data, path):
+    with open(path, 'w') as file:
+        json.dump(data, file)
+    return
+
+def read_kyocera_pickle(path):
+    with open(path, 'rb') as file:
+        data = pickle.load(file)
+    return data
+
+
+def read_kyocera_json(path):
+    with open(path, 'r') as file:
+        data = json.load(file)
+    return data
