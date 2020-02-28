@@ -1,28 +1,31 @@
 from common_func import *
 
 
-def get_kyocera_links(html):
+def get_samsung_links(html):
     soup = BeautifulSoup(html, 'html.parser')
-    items = soup.find_all(colspan="2")
+    items = soup.find('div', id="listoftovar").find_all('a')
     bd_links = []
+    old_item = []
     for item in items:
+        if old_item == item.get('href'): continue
+
+        old_item = item.get('href')
         bd_links.append({
-            'name': item.find('a').get_text(),
-            'title': item.find('a').get('title').replace('Kyocera ', ''),
-            'link': HOST + item.find('a').get('href')
+            'name': item.get_text(),
+            'title': item.get('title'),
+            'link': HOST + item.get('href')
         })
     return bd_links
 
-
-def get_kyo_cart_param(items):
+def get_sams_cart_param(items):
     cart_param = []
     c = 0
     for item in items:
         c += 1
         if c%2 == 1:
             par_name = item.get_text()
-            if par_name not in KYO_CART_PARAM:
-                KYO_CART_PARAM.append(par_name)
+            if par_name not in SAMS_CART_PARAM:
+                SAMS_CART_PARAM.append(par_name)
         else:
             par_val = item.get_text()
             cart_param.append({
@@ -34,12 +37,11 @@ def get_kyo_cart_param(items):
     return cart_param
 
 
-def get_kyocera_page_content(html, bd_link):
+def get_samsung_page_content(html, bd_link, count):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.h5.find_next_siblings('ul')
     cartridge = []
-    global COUNT
-    print(f'{COUNT}. Обрабатываем картридж {bd_link["name"]} по ссылке {bd_link["link"]}...', end=' ')
+    print(f'{count}. Обрабатываем картридж {bd_link["name"]} по ссылке {bd_link["link"]}...', end=' ')
     list_of_devices = get_list_of_devices(items)
     print(f'Получено {len(list_of_devices)} аппарата(ов)')
 
@@ -52,11 +54,11 @@ def get_kyocera_page_content(html, bd_link):
         print(f'Ошибка: {e.__class__}')
 
     items = soup.find_all(border = '1')[0].find_all('td')
-    cart_param = get_kyo_cart_param(items)
+    cart_param = get_sams_cart_param(items)
 
     cartridge.append({
-        'count': COUNT,
-        'brand': 'Kyocera',
+        'count': count,
+        'brand': 'Samsung',
         'name': bd_link["name"],
         'type_cart': type_cart,
         'type_cart_rus': bd_link['title'],
@@ -67,48 +69,35 @@ def get_kyocera_page_content(html, bd_link):
     return cartridge
 
 
-def parse_kyocera():
-    html = get_request(URL_KYO)
+def parse_samsung(url):
+    html = get_request(url)
     if html.status_code != 200:
-        print('Ошибка открытия страницы - ', URL_KYO)
+        print('Ошибка открытия страницы - ', url)
         print(html)
         raise SystemExit
 
-    print('Парсинт URLS с главной страницы Kyocera...')
-    bd_links = get_kyocera_links(html.text)
+    print('Парсинт URLS с главной страницы Samsung...')
+    bd_links = get_samsung_links(html.text)
     print(f'Готово. Собрано {len(bd_links)} ссылок.')
+    print()
 
-    global COUNT
-    COUNT = START
+    start = 0
+    stop = -1
+    count = start
+    bd_samsung = []
     for bd_link in bd_links:
-        COUNT += 1
+        count += 1
         html = get_request(bd_link['link'])
         if html.status_code != 200:
             print('Ошибка открытия страницы - ', bd_link['link'])
             print(html)
             continue
-        BD_KYOCERA.append(get_kyocera_page_content(html.text, bd_link))
+        bd_samsung.append(get_samsung_page_content(html.text, bd_link, count))
 
-    print('***************  KYO_CART_PARAM  **************')
-    print(KYO_CART_PARAM)
-    return
+    print('***************  SAMS_CART_PARAM  **************')
+    print(len(SAMS_CART_PARAM))
+    print(SAMS_CART_PARAM)
+    # print()
+    # print(bd_samsung[:3], end='\n\n')
 
-
-def write_kyocera_csv(filename):
-    global BD_KYOCERA
-    with open(filename, 'w', newline='') as file:
-        writer = csv.writer(file, delimiter=';')
-        #writer.writerow(['Картридж', 'Тип картриджа', 'Ссылка картриджа', 'Устройства' ])
-        for item in BD_KYOCERA:
-            devices = str_of_devices(item[0]['devices'])
-            for i in item:
-                writer.writerow([
-                i['count'],
-                i['brand'],
-                i['name'],
-                i['type_cart'],
-                i['type_cart_rus'],
-                i['link'],
-                devices
-                ])
-    return
+    return bd_samsung
