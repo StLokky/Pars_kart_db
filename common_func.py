@@ -64,6 +64,7 @@ def read_data_from_file_json(filename):
         return None
     return data
 
+
 def write_data_to_csv(data, filename):
     with open(filename, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=';')
@@ -72,13 +73,12 @@ def write_data_to_csv(data, filename):
             devices = str_of_devices(item[0]['devices'])
             for i in item:
                 writer.writerow([
-                i['count'],
-                i['brand'],
-                i['name'],
-                i['type_cart'],
-                i['type_cart_rus'],
-                i['link'],
-                devices
+                    i['count'],
+                    i['brand'],
+                    i['name'],
+                    i['type_cart'],
+                    i['type_cart_rus'],
+                    i['link'],
+                    devices
                 ])
     return 0
-

@@ -7,7 +7,8 @@ def get_samsung_links(html):
     bd_links = []
     old_item = []
     for item in items:
-        if old_item == item.get('href'): continue
+        if old_item == item.get('href'):
+            continue
 
         old_item = item.get('href')
         bd_links.append({
@@ -17,12 +18,13 @@ def get_samsung_links(html):
         })
     return bd_links
 
+
 def get_sams_cart_param(items):
     cart_param = []
     c = 0
     for item in items:
         c += 1
-        if c%2 == 1:
+        if c % 2 == 1:
             par_name = item.get_text()
             if par_name not in SAMS_CART_PARAM:
                 SAMS_CART_PARAM.append(par_name)
@@ -41,19 +43,23 @@ def get_samsung_page_content(html, bd_link, count):
     soup = BeautifulSoup(html, 'html.parser')
     items = soup.h5.find_next_siblings('ul')
     cartridge = []
-    print(f'{count}. Обрабатываем картридж {bd_link["name"]} по ссылке {bd_link["link"]}...', end=' ')
+    print(
+        f'{count}. Обрабатываем картридж {bd_link["name"]} по ссылке {bd_link["link"]}...',
+        end=' ')
     list_of_devices = get_list_of_devices(items)
     print(f'Получено {len(list_of_devices)} аппарата(ов)')
 
     items = soup.h4.find_previous_sibling('br')
     try:                                                # на 5 страницах раздела нестандартная разметка
-        type_cart = items.previous.replace('\r\n','')   # разобраться позже или обработать 5 пустых записей
+        # разобраться позже или обработать 5 пустых записей
+        type_cart = items.previous.replace('\r\n', '')
     except Exception as e:                              # "тип картриджа" - ручками
         type_cart = ''
-        print(f'Ошибка получения типа картриджа в странице {COUNT}, картридж - {bd_link["name"]}')
+        print(
+            f'Ошибка получения типа картриджа в странице {COUNT}, картридж - {bd_link["name"]}')
         print(f'Ошибка: {e.__class__}')
 
-    items = soup.find_all(border = '1')[0].find_all('td')
+    items = soup.find_all(border='1')[0].find_all('td')
     cart_param = get_sams_cart_param(items)
 
     cartridge.append({
