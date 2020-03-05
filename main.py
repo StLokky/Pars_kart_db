@@ -1,16 +1,32 @@
-from parser_kyocera import *
-from parser_samsung import *
+from  func import *
+# from pprint import pprint
 
-# parse_kyocera()
-# write_kyocera_csv('kyocera.csv')
-# write_data_to_file_pickle(BD_KYOCERA, 'pickle_kyo.bd')
-# write_data_to_file_json(BD_KYOCERA, 'json_kyo_bd.txt')
-# write_data_to_file_pickle(KYO_CART_PARAM,'kyocera_param_pickle.db')
-# write_data_to_file_json(KYO_CART_PARAM,'kyocera_param_json.txt')
+# for brand in ListBrandsFull:  # Проходим по всему списку брендов
+# for brand in ListBrands:  # Проходим по подготовленному списку брендов
+for brand in ['Panasonic']:  # Проходим по одному бренду
+    
+    len_brend = 0
+    br = cBrand(brand)    # Переменная с ссылками на страницы бренда (или None, если нет такого бренда)
 
-bd_samsung = parse_samsung('http://rashodnika.net/8_1_1.html')
-write_data_to_csv(bd_samsung, 'samsung_laser_full.csv')
-write_data_to_file_pickle(bd_samsung, 'samsung_laser_full_pickle.db')
-write_data_to_file_json(bd_samsung, 'samsung_laser_full_json.txt')
-write_data_to_file_pickle(SAMS_CART_PARAM, 'samsung_param_pickle.db')
-write_data_to_file_json(SAMS_CART_PARAM, 'samsung_param_json.txt')
+    if br and br[brand]['laser']:
+        br['cart_db_las'] = parse(br, 'laser')    # Если ссылка не пустая, запускаем парсинг лазерных картриджей
+        len_brend += len(br['cart_db_las'])
+
+    if br and br[brand]['inkjet']:
+        br['cart_db_ink'] = parse(br,'inkjet')   # Если ссылка не пустая, запускаем парсинг струйных картриджей
+        len_brend += len(br['cart_db_ink'])
+
+    if br and br[brand]['matrix']:
+        br['cart_db_matr'] = parse(br,'matrix')   # Если ссылка не пустая, запускаем парсинг матричных картриджей
+        len_brend += len(br['cart_db_matr'])
+
+
+    # print('\n\n')
+    # pprint(br, compact=True, sort_dicts=False)
+    print(f"Обработан - {brand} - {len_brend} записей")
+
+    if len_brend > 0:
+        write_data_to_file_pickle(br, f'{brand}_full_pickle.db')
+        write_data_to_file_json(br, f'{brand}_full_json.db')
+
+    del(br)
